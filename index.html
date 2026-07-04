@@ -5,12 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Shape of the Game — A Formation Exhibit</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@100..800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@100..800&display=swap');
 
   :root {
-    --serif: 'Lora', Georgia, serif;
-    --sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --display: 'Fraunces', Georgia, serif;
+    --serif: 'Source Serif 4', Georgia, serif;
+    --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+
+    --ink: #0E1A14;
+    --ink-text: #F3EFE1;
+    --ink-text-muted: rgba(243,239,225,0.72);
+    --ink-border: rgba(243,239,225,0.16);
+
+    --paper: #F6F1E4;
+    --paper-2: #FCFAF3;
+    --ink-on-paper: #1D2A20;
+    --ash: #55604F;
+    --paper-border: #DED6BE;
+
+    --turf: #1F6B45;
+    --turf-deep: #163F2C;
+    --floodlight: #FFD873;
+
     --ease: cubic-bezier(.2,0,0,1);
     --bounce: cubic-bezier(.34,1.56,.64,1);
   }
@@ -18,9 +35,9 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
-    background: #eef3ea;
-    color: #1e2a22;
-    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink-on-paper);
+    font-family: var(--serif);
     line-height: 1.5;
     position: relative;
   }
@@ -39,130 +56,215 @@
   @keyframes eyebrowIn { from { opacity: 0; letter-spacing: .6em; } to { opacity: .85; letter-spacing: .28em; } }
   @keyframes riseIn { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
   @keyframes fieldWipe { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes glowBreathe { 0%, 100% { opacity: .5; transform: scale(1); } 50% { opacity: .7; transform: scale(1.08); } }
+  @keyframes scrollCue { 0% { opacity: 0; transform: translateY(-6px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(20px); } }
 
   .exhibit { max-width: 1000px; margin: 0 auto; padding: clamp(16px, 4vw, 52px); }
 
-  .plaque {
+  /* ---- Masthead ---- */
+  .masthead {
     position: relative;
     overflow: hidden;
-    border-radius: 16px;
-    padding: clamp(24px, 4vw, 44px);
-    text-align: center;
-    background: #2f8f57;
-    color: #f2fff6;
-    box-shadow: 0 20px 46px -24px rgba(18,70,40,0.6);
-    border: 1px solid #268049;
+    isolation: isolate;
+    background: var(--ink);
+    color: var(--ink-text);
+    padding: clamp(64px, 12vw, 120px) clamp(20px, 6vw, 64px) clamp(56px, 9vw, 88px);
   }
-  .plaque .eyebrow {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: .28em;
+  .masthead .glow {
+    position: absolute;
+    width: 60vw;
+    max-width: 640px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    animation: glowBreathe 9s ease-in-out infinite;
+  }
+  .glow-a { background: radial-gradient(circle, var(--floodlight), transparent 70%); top: -18%; left: -12%; opacity: .55; }
+  .glow-b { background: radial-gradient(circle, var(--turf), transparent 70%); bottom: -28%; right: -10%; opacity: .6; animation-delay: -3s; }
+  .glow-c { background: radial-gradient(circle, var(--floodlight), transparent 70%); top: 15%; right: 18%; opacity: .25; animation-delay: -6s; }
+  .masthead-inner { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; }
+  .masthead .kicker {
+    font-family: var(--cond);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: .32em;
     text-transform: uppercase;
-    opacity: .85;
+    color: var(--floodlight);
     animation: eyebrowIn .9s ease both;
   }
-  .plaque h1 {
-    font-family: var(--serif);
+  .masthead h1 {
+    font-family: var(--display);
     font-weight: 600;
-    font-size: clamp(30px, 5.6vw, 54px);
-    margin: 10px 0 10px;
-    line-height: 1.03;
+    font-size: clamp(40px, 8vw, 96px);
+    line-height: .98;
+    letter-spacing: -.01em;
+    margin: 16px 0 18px;
     text-wrap: balance;
-    text-shadow: 0 2px 12px rgba(12,48,28,0.4);
-    animation: titleIn .85s var(--ease) both;
+    animation: titleIn .9s var(--ease) both;
     animation-delay: .12s;
   }
-  .plaque p {
+  .masthead .deck {
     font-family: var(--serif);
     font-style: italic;
-    font-size: clamp(14px, 1.7vw, 18px);
-    opacity: .94;
-    margin: 0 auto;
-    max-width: 60ch;
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--ink-text-muted);
+    max-width: 58ch;
+    margin: 0;
     animation: riseIn .8s ease both;
     animation-delay: .3s;
+  }
+  .scroll-cue {
+    margin-top: clamp(36px, 6vw, 56px);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--cond);
+    font-size: 12px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-text-muted);
+    animation: riseIn .8s ease both;
+    animation-delay: .5s;
+  }
+  .scroll-cue i {
+    display: block;
+    width: 1px;
+    height: 28px;
+    background: linear-gradient(var(--floodlight), transparent);
+    animation: scrollCue 1.8s ease-in-out infinite;
   }
 
   .intro {
     margin: clamp(20px, 3vw, 30px) 0;
     padding: clamp(16px, 2.5vw, 24px) clamp(18px, 3vw, 26px);
-    background: #fbfdf9;
-    border-left: 3px solid #2f8f57;
+    background: var(--paper-2);
+    border-left: 3px solid var(--turf);
     border-radius: 10px;
     box-shadow: 0 1px 2px rgba(30,60,40,0.08);
     animation: riseIn .7s ease both;
     animation-delay: .42s;
   }
   .intro h2 {
-    font-family: var(--mono);
-    font-size: 11px;
+    font-family: var(--cond);
+    font-weight: 600;
+    font-size: 12px;
     letter-spacing: .2em;
     text-transform: uppercase;
-    color: #1f6b40;
+    color: var(--turf);
     margin: 0 0 10px;
   }
-  .intro p { margin: 0 0 8px; font-size: 15px; color: #566057; max-width: 68ch; }
+  .intro p { margin: 0 0 8px; font-size: 15px; color: var(--ash); max-width: 68ch; }
   .intro p:last-child { margin-bottom: 0; }
-  .intro strong { color: #1e2a22; }
+  .intro strong { color: var(--ink-on-paper); }
 
-  .tabs {
+  /* ---- Filmstrip nav ---- */
+  .filmstrip {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: clamp(18px, 3vw, 26px) 0 12px;
+    flex-wrap: nowrap;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    padding: 4px 4px 16px;
+    margin: clamp(18px, 3vw, 26px) 0 14px;
     animation: riseIn .7s ease both;
     animation-delay: .5s;
   }
-  .tab {
-    font-family: var(--mono);
-    font-size: 13px;
-    letter-spacing: .03em;
-    padding: 10px 18px;
-    border-radius: 8px;
+  .film-item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    width: 92px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: var(--paper-2);
+    border: 1px solid var(--paper-border);
+    border-radius: 10px;
+    padding: 10px 8px 11px;
     cursor: pointer;
-    font-weight: 500;
-    background: #fbfdf9;
-    color: #566057;
-    border: 1px solid #d3ddcd;
-    transition: all .18s var(--ease);
+    transition: transform .18s var(--ease), background .18s ease, border-color .18s ease, box-shadow .18s ease;
   }
-  .tab:hover { transform: translateY(-2px); }
-  .tab:focus-visible { outline: 2px solid #2f8f57; outline-offset: 2px; }
-  .tab[aria-pressed="true"] {
-    font-weight: 700;
-    background: #2f8f57;
-    color: #f2fff6;
-    border-color: #2f8f57;
-    box-shadow: 0 6px 16px -8px rgba(30,90,50,0.6);
+  .film-item:hover { transform: translateY(-2px); }
+  .film-item:focus-visible { outline: 2px solid var(--floodlight); outline-offset: 2px; }
+  .film-item[aria-pressed="true"] {
+    background: var(--turf);
+    border-color: var(--turf);
+    box-shadow: 0 6px 16px -8px rgba(31,107,69,.55);
     transform: translateY(-1px);
   }
+  .film-item[aria-pressed="true"] .film-thumb { background: var(--ink); }
+  .film-item[aria-pressed="true"] .film-cap { color: var(--paper-2); }
+  .film-item[aria-pressed="true"] .film-cap em { color: var(--floodlight); }
+  .film-thumb {
+    position: relative;
+    width: 62px;
+    aspect-ratio: 68 / 100;
+    background: var(--turf);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .film-line { position: absolute; border: 1px solid rgba(255,255,255,.55); }
+  .film-line.f-boundary { inset: 6%; }
+  .film-line.f-halfway { left: 6%; right: 6%; top: 50%; border-top: 1px solid rgba(255,255,255,.55); border-bottom: none; }
+  .film-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 50%;
+    background: #fff;
+  }
+  .film-cap {
+    font-family: var(--cond);
+    font-size: 11.5px;
+    letter-spacing: .02em;
+    text-align: center;
+    line-height: 1.25;
+    color: var(--ink-on-paper);
+  }
+  .film-cap em { display: block; font-style: normal; font-size: 10px; color: var(--ash); }
 
   .formation-note {
-    font-family: var(--serif);
+    font-family: var(--display);
     font-style: italic;
-    font-size: clamp(14px, 1.6vw, 16px);
-    color: #566057;
-    margin: 0 0 22px;
-    min-height: 22px;
-    max-width: 72ch;
+    font-weight: 500;
+    font-size: clamp(19px, 2.6vw, 27px);
+    line-height: 1.32;
+    color: var(--ink-on-paper);
+    margin: 0 0 26px;
+    max-width: 62ch;
+    padding-left: 20px;
+    border-left: 3px solid var(--turf);
+    min-height: 1.3em;
   }
 
   .board {
     display: grid;
-    grid-template-columns: minmax(260px, 430px) 1fr;
-    gap: clamp(18px, 3vw, 28px);
+    grid-template-columns: minmax(260px, 430px) 40px 1fr;
+    column-gap: 4px;
+    row-gap: 0;
     align-items: start;
   }
+  .gutter { align-self: stretch; display: flex; justify-content: center; }
+  .gutter::before {
+    content: "";
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(var(--paper-border), color-mix(in srgb, var(--ink-on-paper) 22%, transparent), var(--paper-border));
+  }
   @media (max-width: 780px) {
-    .board { grid-template-columns: 1fr; }
+    .board { grid-template-columns: 1fr; row-gap: clamp(18px, 3vw, 28px); }
+    .gutter { display: none; }
   }
 
   .frame {
-    background: #f4f7ef;
+    background: var(--paper-2);
     padding: 14px;
     border-radius: 16px;
     box-shadow: 0 16px 36px -20px rgba(20,60,35,0.4);
-    border: 1px solid #e0e8db;
+    border: 1px solid var(--paper-border);
     animation: riseIn .7s ease both;
     animation-delay: .6s;
   }
@@ -173,7 +275,7 @@
     aspect-ratio: 68 / 100;
     border-radius: 9px;
     overflow: hidden;
-    background: #2b8a52;
+    background: var(--turf);
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
     animation: fieldWipe .95s var(--ease) both;
     animation-delay: .55s;
@@ -215,8 +317,8 @@
     font-size: clamp(10px, 1.5vw, 13px);
     cursor: pointer;
     padding: 0;
-    background: #fbfdf9;
-    color: #1c6b3f;
+    background: var(--paper-2);
+    color: var(--turf-deep);
     border: 1.5px solid rgba(255,255,255,0.9);
     box-shadow: 0 2px 6px rgba(18,50,30,0.4);
     transition-property: top, left, transform, background, color, box-shadow, border-color;
@@ -224,20 +326,20 @@
     transition-timing-function: var(--bounce), var(--bounce), ease, ease, ease, ease, ease;
   }
   .marker:hover { transform: translate(-50%,-50%) scale(1.14); z-index: 6; }
-  .marker:focus-visible { outline: 2px solid #c99a3a; outline-offset: 2px; }
+  .marker:focus-visible { outline: 2px solid var(--floodlight); outline-offset: 2px; }
   .marker.active {
-    background: #1f8a4d;
-    color: #f2fff6;
-    border-color: #eafff1;
-    box-shadow: 0 0 0 4px rgba(55,168,98,0.32), 0 5px 16px rgba(18,60,35,0.55);
+    background: var(--ink);
+    color: var(--ink-text);
+    border-color: var(--floodlight);
+    box-shadow: 0 0 0 4px rgba(255,216,115,0.32), 0 5px 16px rgba(14,26,20,0.55);
   }
 
-  .overlay { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: rgba(120,220,160,0.32); }
+  .overlay { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: rgba(255,216,115,0.32); }
 
   .label-card {
     position: relative;
-    background: #fbfdf9;
-    border: 1px solid #d3ddcd;
+    background: var(--paper-2);
+    border: 1px solid var(--paper-border);
     border-radius: 12px;
     padding: clamp(20px, 3vw, 30px);
     min-height: 380px;
@@ -246,28 +348,29 @@
     animation-delay: .68s;
   }
   .label-card .eyebrow {
-    font-family: var(--mono);
-    font-size: 11px;
+    font-family: var(--cond);
+    font-weight: 600;
+    font-size: 12px;
     letter-spacing: .2em;
     text-transform: uppercase;
-    color: #1f6b40;
+    color: var(--turf);
     margin: 0 0 4px;
   }
   .label-card h3 {
-    font-family: var(--serif);
+    font-family: var(--display);
     font-weight: 600;
     font-size: clamp(22px, 3vw, 28px);
     margin: 0 0 12px;
-    color: #1e2a22;
+    color: var(--ink-on-paper);
     text-wrap: balance;
   }
   .label-card .role {
     font-size: 15px;
-    color: #566057;
+    color: var(--ash);
     max-width: 58ch;
     margin: 0 0 22px;
     padding-bottom: 18px;
-    border-bottom: 1px dashed #c4bfa8;
+    border-bottom: 1px dashed var(--paper-border);
   }
   .era-row { display: grid; grid-template-columns: 104px 1fr; gap: 14px; margin-bottom: 16px; align-items: start; }
   .era-row:last-child { margin-bottom: 0; }
@@ -284,10 +387,10 @@
   }
   .era-tag.legend { background: #a9713b; color: #fff; }
   .era-tag.golden { background: #c99a3a; color: #2a2012; }
-  .era-tag.modern { background: #2f8f57; color: #fff; }
-  .era-player .name { font-weight: 700; font-size: 15.5px; color: #1e2a22; }
-  .era-player .meta { font-family: var(--mono); font-size: 11.5px; color: #1f6b40; margin: 1px 0 4px; }
-  .era-player .note { font-size: 13.5px; color: #566057; margin: 0; }
+  .era-tag.modern { background: var(--turf); color: #fff; }
+  .era-player .name { font-weight: 700; font-size: 15.5px; color: var(--ink-on-paper); }
+  .era-player .meta { font-family: var(--mono); font-size: 11.5px; color: var(--turf); margin: 1px 0 4px; }
+  .era-player .note { font-size: 13.5px; color: var(--ash); margin: 0; }
 
   .placeholder {
     min-height: 340px;
@@ -298,28 +401,35 @@
   }
   .placeholder .eyebrow { margin: 0 0 10px; }
   .placeholder p.body {
-    font-family: var(--serif);
+    font-family: var(--display);
     font-style: italic;
-    font-size: 16px;
-    color: #566057;
+    font-size: 17px;
+    color: var(--ash);
     max-width: 34ch;
     margin: 0;
   }
 
-  footer.credit {
-    text-align: center;
+  footer.colophon {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--paper-border);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  footer.colophon .line {
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: .1em;
+    font-size: 10.5px;
+    letter-spacing: .08em;
     text-transform: uppercase;
-    color: #7c887b;
-    opacity: .7;
-    margin: 36px 0 0;
+    color: var(--ash);
+    opacity: .85;
+    margin: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; }
-    .marker { transition: none; }
+    .marker, .ball { transition: none; }
   }
 
   .team-chips {
@@ -335,10 +445,10 @@
     letter-spacing: .01em;
     padding: 5px 12px 5px 10px;
     border-radius: 20px;
-    background: color-mix(in srgb, var(--flag) 16%, #fbfdf9 84%);
-    border: 1px solid color-mix(in srgb, var(--flag) 55%, #d3ddcd 45%);
+    background: color-mix(in srgb, var(--flag) 16%, var(--paper-2) 84%);
+    border: 1px solid color-mix(in srgb, var(--flag) 55%, var(--paper-border) 45%);
     border-left: 4px solid var(--flag);
-    color: #26301f;
+    color: var(--ink-on-paper);
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -350,43 +460,60 @@
   }
 
   .goal-panel {
-    background: #fbfdf9;
-    border: 1px solid #d3ddcd;
+    background: var(--paper-2);
+    border: 1px solid var(--paper-border);
     border-radius: 10px;
-    padding: 16px 20px;
-    margin: 0 0 18px;
+    padding: 20px 24px;
+    margin: 0 0 22px;
   }
-  .goal-panel .goal-text p {
-    margin: 0 0 8px;
-    font-size: 14px;
-    color: #40493d;
-    max-width: 68ch;
+  .goal-panel .goal-text {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 16px;
   }
-  .goal-panel .goal-text p:last-child { margin-bottom: 12px; }
-  .goal-panel .goal-text strong {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: .12em;
+  @media (max-width: 560px) {
+    .goal-panel .goal-text { grid-template-columns: 1fr; gap: 14px; }
+  }
+  .goal-panel .goal-col + .goal-col {
+    border-left: 1px solid var(--paper-border);
+    padding-left: 24px;
+  }
+  @media (max-width: 560px) {
+    .goal-panel .goal-col + .goal-col { border-left: none; border-top: 1px solid var(--paper-border); padding-left: 0; padding-top: 14px; }
+  }
+  .goal-panel .goal-kicker {
+    font-family: var(--cond);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: .14em;
     text-transform: uppercase;
-    color: #1f6b40;
-    margin-right: 4px;
+    color: var(--turf);
+    margin: 0 0 8px;
+  }
+  .goal-panel .goal-col p:not(.goal-kicker) {
+    font-family: var(--serif);
+    font-size: 14.5px;
+    color: var(--ink-on-paper);
+    margin: 0;
   }
   .play-btn {
-    font-family: var(--mono);
+    font-family: var(--cond);
     font-size: 13px;
     font-weight: 700;
-    letter-spacing: .03em;
-    padding: 9px 18px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    padding: 10px 20px;
     border-radius: 8px;
-    border: 1px solid #2f8f57;
-    background: #2f8f57;
-    color: #f2fff6;
+    border: 1px solid var(--turf);
+    background: var(--turf);
+    color: var(--paper-2);
     cursor: pointer;
     transition: transform .15s var(--ease), box-shadow .15s var(--ease), opacity .2s ease;
   }
   .play-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px -8px rgba(30,90,50,0.6); }
   .play-btn:disabled { opacity: .55; cursor: default; }
-  .play-btn:focus-visible { outline: 2px solid #c99a3a; outline-offset: 2px; }
+  .play-btn:focus-visible { outline: 2px solid var(--floodlight); outline-offset: 2px; }
 
   .ball {
     position: absolute;
@@ -416,20 +543,26 @@
 </head>
 <body>
 
-<div class="exhibit">
-  <header class="plaque">
-    <div class="eyebrow">Gallery Four · Tactical Systems</div>
+<header class="masthead">
+  <div class="glow glow-a" aria-hidden="true"></div>
+  <div class="glow glow-b" aria-hidden="true"></div>
+  <div class="glow glow-c" aria-hidden="true"></div>
+  <div class="masthead-inner">
+    <div class="kicker">Gallery Four · Tactical Systems</div>
     <h1>The Shape of the Game</h1>
-    <p>An exhibit on football formations, the roles within them, and the players who defined each position.</p>
-  </header>
+    <p class="deck">An exhibit on football formations, the roles within them, and the players who defined each position.</p>
+    <div class="scroll-cue" aria-hidden="true"><i></i>Scroll to explore</div>
+  </div>
+</header>
 
+<div class="exhibit">
   <section class="intro">
     <h2>How to read a formation</h2>
     <p>A formation is shorthand for how eleven outfield players occupy the pitch, written back to front: <strong>defenders–midfielders–forwards</strong>. The goalkeeper is assumed and never counted. <strong>4-3-3</strong> means four defenders, three midfielders, three forwards — the same eleven bodies, arranged for a different fight.</p>
     <p>No two formations play the same way even with matching numbers. Choose one below, then touch any player on the board to open their exhibit label.</p>
   </section>
 
-  <nav class="tabs" id="tabs" aria-label="Choose a formation"></nav>
+  <nav class="filmstrip" id="tabs" aria-label="Choose a formation"></nav>
   <p class="formation-note" id="formation-note"></p>
   <div class="team-chips" id="team-chips"></div>
   <div class="goal-panel" id="goal-panel" hidden>
@@ -462,10 +595,16 @@
       </div>
     </div>
 
+    <div class="gutter" aria-hidden="true"></div>
+
     <div class="label-card" id="label-card"></div>
   </div>
 
-  <footer class="credit">The Shape of the Game — Formation Exhibit</footer>
+  <footer class="colophon">
+    <p class="line">Typeset in Fraunces, Source Serif 4, Barlow Condensed &amp; JetBrains Mono</p>
+    <p class="line">Formation and roster data — 2026 FIFA World Cup, Round of 32</p>
+    <p class="line">Vol. 2026 · No. 32 — The Shape of the Game</p>
+  </footer>
 </div>
 
 <script>
@@ -807,14 +946,26 @@
     return FORMATIONS.filter(function (f) { return f.key === state.key; })[0];
   }
 
+  function renderThumbDots(positions) {
+    var html = '<span class="film-line f-boundary"></span><span class="film-line f-halfway"></span>';
+    positions.forEach(function (pos) {
+      html += '<i class="film-dot" style="left:' + pos.x + '%;top:' + pos.y + '%"></i>';
+    });
+    return html;
+  }
+
   function renderTabs() {
     tabsEl.innerHTML = "";
     FORMATIONS.forEach(function (f) {
+      var count = (f.teams || []).length;
       var btn = document.createElement("button");
-      btn.className = "tab";
+      btn.className = "film-item";
       btn.type = "button";
-      btn.textContent = f.label;
       btn.setAttribute("aria-pressed", String(f.key === state.key));
+      btn.setAttribute("aria-label", f.label + " formation, " + count + " team" + (count === 1 ? "" : "s"));
+      btn.innerHTML =
+        '<span class="film-thumb">' + renderThumbDots(f.positions) + '</span>' +
+        '<span class="film-cap">' + f.label + '<em>' + count + ' team' + (count === 1 ? "" : "s") + '</em></span>';
       btn.addEventListener("click", function () { selectFormation(f.key); });
       tabsEl.appendChild(btn);
     });
@@ -879,8 +1030,8 @@
     }
     goalPanelEl.hidden = false;
     goalTextEl.innerHTML =
-      "<p><strong>Attack</strong>" + f.goal.attackText + "</p>" +
-      "<p><strong>Defend</strong>" + f.goal.defendText + "</p>";
+      '<div class="goal-col attack"><p class="goal-kicker">Attack</p><p>' + f.goal.attackText + "</p></div>" +
+      '<div class="goal-col defend"><p class="goal-kicker">Defend</p><p>' + f.goal.defendText + "</p></div>";
     playBtn.disabled = false;
     playBtn.textContent = "▶ See a goal";
   }
