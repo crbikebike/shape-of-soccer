@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Shape of the Game — A Formation Exhibit</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@100..800&display=swap');
+
+  :root {
+    --serif: 'Lora', Georgia, serif;
+    --sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+    --ease: cubic-bezier(.2,0,0,1);
+    --bounce: cubic-bezier(.34,1.56,.64,1);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: #eef3ea;
+    color: #1e2a22;
+    font-family: var(--sans);
+    line-height: 1.5;
+    position: relative;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.045;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  @keyframes titleIn { from { opacity: 0; transform: translateY(24px) scale(.93); } to { opacity: 1; transform: none; } }
+  @keyframes eyebrowIn { from { opacity: 0; letter-spacing: .6em; } to { opacity: .85; letter-spacing: .28em; } }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+  @keyframes fieldWipe { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+
+  .exhibit { max-width: 1000px; margin: 0 auto; padding: clamp(16px, 4vw, 52px); }
+
+  .plaque {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    padding: clamp(24px, 4vw, 44px);
+    text-align: center;
+    background: #2f8f57;
+    color: #f2fff6;
+    box-shadow: 0 20px 46px -24px rgba(18,70,40,0.6);
+    border: 1px solid #268049;
+  }
+  .plaque .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    opacity: .85;
+    animation: eyebrowIn .9s ease both;
+  }
+  .plaque h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(30px, 5.6vw, 54px);
+    margin: 10px 0 10px;
+    line-height: 1.03;
+    text-wrap: balance;
+    text-shadow: 0 2px 12px rgba(12,48,28,0.4);
+    animation: titleIn .85s var(--ease) both;
+    animation-delay: .12s;
+  }
+  .plaque p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(14px, 1.7vw, 18px);
+    opacity: .94;
+    margin: 0 auto;
+    max-width: 60ch;
+    animation: riseIn .8s ease both;
+    animation-delay: .3s;
+  }
+
+  .intro {
+    margin: clamp(20px, 3vw, 30px) 0;
+    padding: clamp(16px, 2.5vw, 24px) clamp(18px, 3vw, 26px);
+    background: #fbfdf9;
+    border-left: 3px solid #2f8f57;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(30,60,40,0.08);
+    animation: riseIn .7s ease both;
+    animation-delay: .42s;
+  }
+  .intro h2 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: #1f6b40;
+    margin: 0 0 10px;
+  }
+  .intro p { margin: 0 0 8px; font-size: 15px; color: #566057; max-width: 68ch; }
+  .intro p:last-child { margin-bottom: 0; }
+  .intro strong { color: #1e2a22; }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: clamp(18px, 3vw, 26px) 0 12px;
+    animation: riseIn .7s ease both;
+    animation-delay: .5s;
+  }
+  .tab {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: .03em;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    background: #fbfdf9;
+    color: #566057;
+    border: 1px solid #d3ddcd;
+    transition: all .18s var(--ease);
+  }
+  .tab:hover { transform: translateY(-2px); }
+  .tab:focus-visible { outline: 2px solid #2f8f57; outline-offset: 2px; }
+  .tab[aria-pressed="true"] {
+    font-weight: 700;
+    background: #2f8f57;
+    color: #f2fff6;
+    border-color: #2f8f57;
+    box-shadow: 0 6px 16px -8px rgba(30,90,50,0.6);
+    transform: translateY(-1px);
+  }
+
+  .formation-note {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(14px, 1.6vw, 16px);
+    color: #566057;
+    margin: 0 0 22px;
+    min-height: 22px;
+    max-width: 72ch;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: minmax(260px, 430px) 1fr;
+    gap: clamp(18px, 3vw, 28px);
+    align-items: start;
+  }
+  @media (max-width: 780px) {
+    .board { grid-template-columns: 1fr; }
+  }
+
+  .frame {
+    background: #f4f7ef;
+    padding: 14px;
+    border-radius: 16px;
+    box-shadow: 0 16px 36px -20px rgba(20,60,35,0.4);
+    border: 1px solid #e0e8db;
+    animation: riseIn .7s ease both;
+    animation-delay: .6s;
+  }
+
+  .pitch {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 68 / 100;
+    border-radius: 9px;
+    overflow: hidden;
+    background: #2b8a52;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+    animation: fieldWipe .95s var(--ease) both;
+    animation-delay: .55s;
+  }
+
+  .line { position: absolute; border: 1.5px solid rgba(255,255,255,0.72); }
+  .boundary { inset: 4%; border-radius: 1px; }
+  .halfway { left: 4%; right: 4%; top: 50%; border-top: 1.5px solid rgba(255,255,255,0.72); border-bottom: none; }
+  .center-circle { width: 24%; aspect-ratio: 1; left: 50%; top: 50%; transform: translate(-50%,-50%); border-radius: 50%; }
+  .center-spot, .spot-top, .spot-bottom { background: rgba(255,255,255,0.72); border-radius: 50%; border: none; }
+  .center-spot { width: 5px; height: 5px; left: 50%; top: 50%; transform: translate(-50%,-50%); }
+  .box-top { width: 46%; height: 16%; left: 50%; top: 4%; transform: translateX(-50%); border-top: none; }
+  .box-bottom { width: 46%; height: 16%; left: 50%; bottom: 4%; transform: translateX(-50%); border-bottom: none; }
+  .box6-top { width: 22%; height: 6%; left: 50%; top: 4%; transform: translateX(-50%); border-top: none; }
+  .box6-bottom { width: 22%; height: 6%; left: 50%; bottom: 4%; transform: translateX(-50%); border-bottom: none; }
+  .spot-top { width: 4px; height: 4px; left: 50%; top: 15%; transform: translate(-50%,-50%); }
+  .spot-bottom { width: 4px; height: 4px; left: 50%; bottom: 15%; transform: translate(-50%,50%); }
+  .arc-top { width: 16%; aspect-ratio: 1; left: 50%; top: 20%; transform: translate(-50%,-50%); border-radius: 50%; clip-path: inset(50% 0 0 0); }
+  .arc-bottom { width: 16%; aspect-ratio: 1; left: 50%; bottom: 20%; transform: translate(-50%,50%); border-radius: 50%; clip-path: inset(0 0 50% 0); }
+  .corner { width: 5%; aspect-ratio: 1; border: none; }
+  .corner.tl { left: 4%; top: 4%; border-right: 1.5px solid rgba(255,255,255,0.72); border-bottom: 1.5px solid rgba(255,255,255,0.72); border-radius: 0 0 100% 0; }
+  .corner.tr { right: 4%; top: 4%; border-left: 1.5px solid rgba(255,255,255,0.72); border-bottom: 1.5px solid rgba(255,255,255,0.72); border-radius: 0 0 0 100%; }
+  .corner.bl { left: 4%; bottom: 4%; border-right: 1.5px solid rgba(255,255,255,0.72); border-top: 1.5px solid rgba(255,255,255,0.72); border-radius: 0 100% 0 0; }
+  .corner.br { right: 4%; bottom: 4%; border-left: 1.5px solid rgba(255,255,255,0.72); border-top: 1.5px solid rgba(255,255,255,0.72); border-radius: 100% 0 0 0; }
+
+  .markers { position: absolute; inset: 0; }
+  .marker {
+    position: absolute;
+    width: 13%;
+    max-width: 46px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: clamp(10px, 1.5vw, 13px);
+    cursor: pointer;
+    padding: 0;
+    background: #fbfdf9;
+    color: #1c6b3f;
+    border: 1.5px solid rgba(255,255,255,0.9);
+    box-shadow: 0 2px 6px rgba(18,50,30,0.4);
+    transition-property: top, left, transform, background, color, box-shadow, border-color;
+    transition-duration: .7s, .7s, .15s, .2s, .2s, .2s, .2s;
+    transition-timing-function: var(--bounce), var(--bounce), ease, ease, ease, ease, ease;
+  }
+  .marker:hover { transform: translate(-50%,-50%) scale(1.14); z-index: 6; }
+  .marker:focus-visible { outline: 2px solid #c99a3a; outline-offset: 2px; }
+  .marker.active {
+    background: #1f8a4d;
+    color: #f2fff6;
+    border-color: #eafff1;
+    box-shadow: 0 0 0 4px rgba(55,168,98,0.32), 0 5px 16px rgba(18,60,35,0.55);
+  }
+
+  .overlay { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: rgba(120,220,160,0.32); }
+
+  .label-card {
+    position: relative;
+    background: #fbfdf9;
+    border: 1px solid #d3ddcd;
+    border-radius: 12px;
+    padding: clamp(20px, 3vw, 30px);
+    min-height: 380px;
+    box-shadow: 0 1px 2px rgba(30,60,40,0.08);
+    animation: riseIn .7s ease both;
+    animation-delay: .68s;
+  }
+  .label-card .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: #1f6b40;
+    margin: 0 0 4px;
+  }
+  .label-card h3 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(22px, 3vw, 28px);
+    margin: 0 0 12px;
+    color: #1e2a22;
+    text-wrap: balance;
+  }
+  .label-card .role {
+    font-size: 15px;
+    color: #566057;
+    max-width: 58ch;
+    margin: 0 0 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px dashed #c4bfa8;
+  }
+  .era-row { display: grid; grid-template-columns: 104px 1fr; gap: 14px; margin-bottom: 16px; align-items: start; }
+  .era-row:last-child { margin-bottom: 0; }
+  .era-tag {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 5px 8px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 700;
+    height: fit-content;
+  }
+  .era-tag.legend { background: #a9713b; color: #fff; }
+  .era-tag.golden { background: #c99a3a; color: #2a2012; }
+  .era-tag.modern { background: #2f8f57; color: #fff; }
+  .era-player .name { font-weight: 700; font-size: 15.5px; color: #1e2a22; }
+  .era-player .meta { font-family: var(--mono); font-size: 11.5px; color: #1f6b40; margin: 1px 0 4px; }
+  .era-player .note { font-size: 13.5px; color: #566057; margin: 0; }
+
+  .placeholder {
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .placeholder .eyebrow { margin: 0 0 10px; }
+  .placeholder p.body {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 16px;
+    color: #566057;
+    max-width: 34ch;
+    margin: 0;
+  }
+
+  footer.credit {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #7c887b;
+    opacity: .7;
+    margin: 36px 0 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; }
+    .marker { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="exhibit">
+  <header class="plaque">
+    <div class="eyebrow">Gallery Four · Tactical Systems</div>
+    <h1>The Shape of the Game</h1>
+    <p>An exhibit on football formations, the roles within them, and the players who defined each position.</p>
+  </header>
+
+  <section class="intro">
+    <h2>How to read a formation</h2>
+    <p>A formation is shorthand for how eleven outfield players occupy the pitch, written back to front: <strong>defenders–midfielders–forwards</strong>. The goalkeeper is assumed and never counted. <strong>4-3-3</strong> means four defenders, three midfielders, three forwards — the same eleven bodies, arranged for a different fight.</p>
+    <p>No two formations play the same way even with matching numbers. Choose one below, then touch any player on the board to open their exhibit label.</p>
+  </section>
+
+  <nav class="tabs" id="tabs" aria-label="Choose a formation"></nav>
+  <p class="formation-note" id="formation-note"></p>
+
+  <div class="board">
+    <div class="frame">
+      <div class="pitch" id="pitch">
+        <div class="line boundary"></div>
+        <div class="line halfway"></div>
+        <div class="line center-circle"></div>
+        <div class="line center-spot"></div>
+        <div class="line box-top"></div>
+        <div class="line box-bottom"></div>
+        <div class="line box6-top"></div>
+        <div class="line box6-bottom"></div>
+        <div class="line spot-top"></div>
+        <div class="line spot-bottom"></div>
+        <div class="line arc-top"></div>
+        <div class="line arc-bottom"></div>
+        <div class="line corner tl"></div>
+        <div class="line corner tr"></div>
+        <div class="line corner bl"></div>
+        <div class="line corner br"></div>
+        <div class="markers" id="markers"></div>
+        <div class="overlay" id="overlay"></div>
+      </div>
+    </div>
+
+    <div class="label-card" id="label-card"></div>
+  </div>
+
+  <footer class="credit">The Shape of the Game — Formation Exhibit</footer>
+</div>
+
+<script>
+(function () {
+  var EASE = "cubic-bezier(.2,0,0,1)";
+  var BOUNCE = "cubic-bezier(.34,1.56,.64,1)";
+  function reduced() { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+
+  var ABBR_NAMES = {
+    GK: "Goalkeeper", CB: "Centre-back", LB: "Left-back", RB: "Right-back",
+    WB: "Wing-back", DM: "Defensive Midfielder", CM: "Central Midfielder",
+    CAM: "Attacking Midfielder", LM: "Left Midfielder", RM: "Right Midfielder",
+    LW: "Left Winger", RW: "Right Winger", ST: "Striker"
+  };
+
+  var POSITION_INFO = {
+    GK: {
+      role: "The last line of defense. Organizes the backline, commands the penalty area in the air, and increasingly starts attacks with sharp distribution rather than just clearing danger.",
+      eras: [
+        { tag: "legend", era: "Legend", name: "Lev Yashin", meta: "Dynamo Moscow · 1950s–60s", note: "“The Black Spider.” The only goalkeeper ever to win the Ballon d'Or." },
+        { tag: "golden", era: "Golden Era", name: "Gianluigi Buffon", meta: "Juventus · 1990s–2010s", note: "Two decades of shot-stopping and big-game composure at the highest level." },
+        { tag: "modern", era: "Modern", name: "Alisson Becker", meta: "Liverpool · 2020s", note: "Elite reflexes paired with a passing range that turns saves straight into attacks." }
+      ]
+    },
+    CB: {
+      role: "Marks central forwards, dominates the air on set pieces, and holds the offside line. Increasingly asked to step forward and start attacks with the first pass.",
+      eras: [
+        { tag: "legend", era: "Legend", name: "Franz Beckenbauer", meta: "Bayern Munich · 1960s–70s", note: "Invented the modern “libero” — a defender who reads the game like a conductor." },
+        { tag: "golden", era: "Golden Era", name: "Paolo Maldini", meta: "AC Milan · 1990s–2000s", note: "Positioning so precise he rarely needed to make a tackle at all." },
+        { tag: "modern", era: "Modern", name: "Virgil van Dijk", meta: "Liverpool · 2020s", note: "Physical dominance in the air combined with genuinely elite ball-playing calm." }
+      ]
+    },
+    FB: {
+      role: "Defends the flank in isolation, then overlaps the winger in possession to deliver crosses. Modern full-backs often invert into midfield when their team has the ball.",
+      eras: [
+        { tag: "legend", era: "Legend", name: "Cafu", meta: "AC Milan / Brazil · 1990s–2000s", note: "The most-capped World Cup player ever, and the template for the attacking full-back." },
+        { tag: "golden", era: "Golden Era", name: "Dani Alves", meta: "Barcelona · 2000s–2010s", note: "Functioned as an auxiliary winger almost every time his team had the ball." },
+        { tag: "modern", era: "Modern", name: "Trent Alexander-Arnold", meta: "Liverpool · 2020s", note: "A full-back whose long-range passing makes him one of his team's primary creators." }
+      ]
+    },
+    WB: {
+      role: "Covers an entire flank alone in a back-three system — defending the wide channel and providing the team's only width in attack.",
+      eras: [
+        { tag: "legend", era: "Legend", name: "Giacinto Facchetti", meta: "Inter Milan · 1960s", note: "Pioneered the attacking wing-back inside Italy's famously defensive catenaccio." },
+        { tag: "golden", era: "Golden Era", name: "Roberto Carlos", meta: "Real Madrid · 1990s–2000s", note: "Thunderous shooting power paired with relentless overlapping runs." },
+        { tag: "modern", era: "Modern", name: "Achraf Hakimi", meta: "Paris Saint-Germain · 2020s", note: "Rare recovery pace lets him bomb forward without leaving his side exposed." }
+      ]
+    },
+    DM: {
+      role: "Sits in front of the back line to screen it from counter-attacks, breaks up opposition moves, and recycles possession to launch the next attack.",
+      eras: [
+        { tag: "legend", era: "Legend", name: "Claude Makélélé", meta: "Real Madrid / Chelsea · 1990s–2000s", note: "So defined the position that pundits still call it “the Makélélé role.”" },
+        { tag: "golden", era: "Golden Era", name: "Sergio Busquets", meta: "Barcelona · 2000s–2010s", note: "Turned the role from destroyer into the calmest passer on the pitch." },
+        { tag: "modern", era: "Modern", name: "Rodri", meta: "Manchester City · 2020s", note: "Ballon d'Or-winning deep-lying orchestrator who dictates every phase of play." }
+      ]
+    },
+    CM: {
+      role: "Links defense and attack, covering ground box-to-box while contributing to both defensive cover and goals at the other end.",
+      eras: [
+        { tag: "legend", era: "Legend", name: "Bryan Robson", meta: "Manchester United · 1980s", note: "“Captain Marvel” — the archetype of the tireless box-to-box midfielder." },
+        { tag: "golden", era: "Golden Era", name: "Steven Gerrard", meta: "Liverpool · 2000s–2010s", note: "Dragged his team forward with goals, tackles, and long-range strikes alike." },
+        { tag: "modern", era: "Modern", name: "Jude Bellingham", meta: "Real Madrid · 2020s", note: "A complete modern midfielder — scoring, creating, and defending in equal measure." }
+      ]
+    },
+    CAM: {
+      role: "Operates in the pocket between the opposition's midfield and defense, creating chances and often taking the final pass before goal.",
+      eras: [
+        { tag: "legend", era: "Legend", name: "Diego Maradona", meta: "Napoli / Argentina · 1980s", note: "Arguably the greatest number 10 the game has produced." },
+        { tag: "golden", era: "Golden Era", name: "Zinedine Zidane", meta: "Real Madrid · 1990s–2000s", note: "Effortless close control and vision that made the impossible look calm." },
+        { tag: "modern", era: "Modern", name: "Kevin De Bruyne", meta: "Manchester City · 2020s", note: "The most consistently creative playmaker of his generation." }
+      ]
+    },
+    W: {
+      role: "Stretches play wide, beats full-backs one-on-one, and either delivers crosses or cuts inside to shoot.",
+      eras: [
+        { tag: "legend", era: "Legend", name: "George Best", meta: "Manchester United · 1960s–70s", note: "A dazzling dribbler and one of football's first true global superstars." },
+        { tag: "golden", era: "Golden Era", name: "Cristiano Ronaldo", meta: "Manchester United · 2000s", note: "Turned raw winger dribbling into ruthlessly clinical, prolific output." },
+        { tag: "modern", era: "Modern", name: "Vinícius Júnior", meta: "Real Madrid · 2020s", note: "Explosive pace and dribbling that terrorizes defenders from the left flank." }
+      ]
+    },
+    ST: {
+      role: "Leads the line — finishing chances, holding up play under pressure, and pulling defenders out of position to create space for others.",
+      eras: [
+        { tag: "legend", era: "Legend", name: "Pelé", meta: "Santos / Brazil · 1950s–70s", note: "Three World Cups won, and the original template for the complete striker." },
+        { tag: "golden", era: "Golden Era", name: "Ronaldo Nazário", meta: "Real Madrid / Inter · 1990s–2000s", note: "A generational blend of pace, power, and finishing rarely seen since." },
+        { tag: "modern", era: "Modern", name: "Erling Haaland", meta: "Manchester City · 2020s", note: "A relentless goal-scoring machine redefining what strikers are expected to produce." }
+      ]
+    }
+  };
+
+  var FORMATIONS = [
+    {
+      key: "442", label: "4-4-2",
+      note: "Two flat banks of four, two up top — English football's traditional spine, direct and hard to break down.",
+      positions: [
+        { type: "GK", abbr: "GK", x: 50, y: 90 },
+        { type: "CB", abbr: "CB", x: 36, y: 74 }, { type: "CB", abbr: "CB", x: 64, y: 74 },
+        { type: "FB", abbr: "LB", x: 10, y: 68 }, { type: "FB", abbr: "RB", x: 90, y: 68 },
+        { type: "W", abbr: "LM", x: 12, y: 46 }, { type: "W", abbr: "RM", x: 88, y: 46 },
+        { type: "CM", abbr: "CM", x: 37, y: 50 }, { type: "CM", abbr: "CM", x: 63, y: 50 },
+        { type: "ST", abbr: "ST", x: 37, y: 16 }, { type: "ST", abbr: "ST", x: 63, y: 16 }
+      ]
+    },
+    {
+      key: "433", label: "4-3-3",
+      note: "Width from the wingers, control from a midfield triangle — the modern possession game's default shape.",
+      positions: [
+        { type: "GK", abbr: "GK", x: 50, y: 90 },
+        { type: "CB", abbr: "CB", x: 36, y: 74 }, { type: "CB", abbr: "CB", x: 64, y: 74 },
+        { type: "FB", abbr: "LB", x: 10, y: 68 }, { type: "FB", abbr: "RB", x: 90, y: 68 },
+        { type: "DM", abbr: "DM", x: 50, y: 58 },
+        { type: "CM", abbr: "CM", x: 32, y: 46 }, { type: "CM", abbr: "CM", x: 68, y: 46 },
+        { type: "W", abbr: "LW", x: 14, y: 22 }, { type: "W", abbr: "RW", x: 86, y: 22 },
+        { type: "ST", abbr: "ST", x: 50, y: 10 }
+      ]
+    },
+    {
+      key: "352", label: "3-5-2",
+      note: "Wing-backs supply the width a back three gives up — an extra body in central midfield to control the game.",
+      positions: [
+        { type: "GK", abbr: "GK", x: 50, y: 90 },
+        { type: "CB", abbr: "CB", x: 26, y: 76 }, { type: "CB", abbr: "CB", x: 50, y: 80 }, { type: "CB", abbr: "CB", x: 74, y: 76 },
+        { type: "WB", abbr: "WB", x: 8, y: 54 }, { type: "WB", abbr: "WB", x: 92, y: 54 },
+        { type: "DM", abbr: "DM", x: 50, y: 60 },
+        { type: "CM", abbr: "CM", x: 35, y: 48 }, { type: "CM", abbr: "CM", x: 65, y: 48 },
+        { type: "ST", abbr: "ST", x: 37, y: 16 }, { type: "ST", abbr: "ST", x: 63, y: 16 }
+      ]
+    },
+    {
+      key: "4231", label: "4-2-3-1",
+      note: "A double pivot shields the back four while a free playmaker floats behind a lone striker.",
+      positions: [
+        { type: "GK", abbr: "GK", x: 50, y: 90 },
+        { type: "CB", abbr: "CB", x: 36, y: 74 }, { type: "CB", abbr: "CB", x: 64, y: 74 },
+        { type: "FB", abbr: "LB", x: 10, y: 68 }, { type: "FB", abbr: "RB", x: 90, y: 68 },
+        { type: "DM", abbr: "DM", x: 36, y: 56 }, { type: "DM", abbr: "DM", x: 64, y: 56 },
+        { type: "CAM", abbr: "CAM", x: 50, y: 36 },
+        { type: "W", abbr: "LW", x: 16, y: 28 }, { type: "W", abbr: "RW", x: 84, y: 28 },
+        { type: "ST", abbr: "ST", x: 50, y: 12 }
+      ]
+    },
+    {
+      key: "343", label: "3-4-3",
+      note: "An extra attacker for a spare defender — built to press high and dominate the ball.",
+      positions: [
+        { type: "GK", abbr: "GK", x: 50, y: 90 },
+        { type: "CB", abbr: "CB", x: 26, y: 76 }, { type: "CB", abbr: "CB", x: 50, y: 80 }, { type: "CB", abbr: "CB", x: 74, y: 76 },
+        { type: "WB", abbr: "WB", x: 8, y: 54 }, { type: "WB", abbr: "WB", x: 92, y: 54 },
+        { type: "CM", abbr: "CM", x: 35, y: 46 }, { type: "CM", abbr: "CM", x: 65, y: 46 },
+        { type: "W", abbr: "LW", x: 16, y: 24 }, { type: "W", abbr: "RW", x: 84, y: 24 },
+        { type: "ST", abbr: "ST", x: 50, y: 10 }
+      ]
+    }
+  ];
+
+  var tabsEl = document.getElementById("tabs");
+  var noteEl = document.getElementById("formation-note");
+  var markersEl = document.getElementById("markers");
+  var overlayEl = document.getElementById("overlay");
+  var cardEl = document.getElementById("label-card");
+
+  var state = { key: "442", selIdx: null };
+
+  function currentFormation() {
+    return FORMATIONS.filter(function (f) { return f.key === state.key; })[0];
+  }
+
+  function renderTabs() {
+    tabsEl.innerHTML = "";
+    FORMATIONS.forEach(function (f) {
+      var btn = document.createElement("button");
+      btn.className = "tab";
+      btn.type = "button";
+      btn.textContent = f.label;
+      btn.setAttribute("aria-pressed", String(f.key === state.key));
+      btn.addEventListener("click", function () { selectFormation(f.key); });
+      tabsEl.appendChild(btn);
+    });
+  }
+
+  function renderMarkers() {
+    var formation = currentFormation();
+    var existing = Array.prototype.slice.call(markersEl.querySelectorAll(".marker"));
+
+    formation.positions.forEach(function (pos, i) {
+      var btn = existing[i];
+      if (!btn) {
+        btn = document.createElement("button");
+        btn.className = "marker";
+        btn.type = "button";
+        btn.style.transitionDelay = (i * 30) + "ms";
+        markersEl.appendChild(btn);
+      }
+      btn.style.left = pos.x + "%";
+      btn.style.top = pos.y + "%";
+      btn.textContent = pos.abbr;
+      btn.setAttribute("aria-label", (ABBR_NAMES[pos.abbr] || ABBR_NAMES[pos.type]) + " position");
+      btn.classList.toggle("active", state.selIdx === i);
+      btn.onclick = function () { selectPosition(i); };
+    });
+    while (markersEl.querySelectorAll(".marker").length > formation.positions.length) {
+      markersEl.removeChild(markersEl.querySelector(".marker:last-of-type"));
+    }
+  }
+
+  function renderNote() {
+    noteEl.textContent = currentFormation().note;
+  }
+
+  function renderCard() {
+    if (state.selIdx == null) {
+      cardEl.innerHTML =
+        '<div class="placeholder">' +
+        '<p class="eyebrow">Exhibit label</p>' +
+        '<p class="body">Touch any player on the board to read about their position — and the legends who defined it.</p>' +
+        "</div>";
+      return;
+    }
+    var pos = currentFormation().positions[state.selIdx];
+    var info = POSITION_INFO[pos.type];
+    var title = ABBR_NAMES[pos.abbr] || ABBR_NAMES[pos.type];
+    var html = '<div class="cardhead"><p class="eyebrow">Position</p>';
+    html += "<h3>" + title + "</h3>";
+    html += '<p class="role">' + info.role + "</p></div>";
+    info.eras.forEach(function (e) {
+      html += '<div class="era-row">';
+      html += '<span class="era-tag ' + e.tag + '">' + e.era + "</span>";
+      html += '<div class="era-player">';
+      html += '<div class="name">' + e.name + "</div>";
+      html += '<div class="meta">' + e.meta + "</div>";
+      html += '<p class="note">' + e.note + "</p>";
+      html += "</div></div>";
+    });
+    cardEl.innerHTML = html;
+  }
+
+  function selectFormation(key) {
+    if (key === state.key) return;
+    state.key = key;
+    state.selIdx = null;
+    renderTabs();
+    renderNote();
+    renderMarkers();
+    renderCard();
+    fadeNote();
+    flashField();
+    pulseMarkers();
+  }
+
+  function selectPosition(i) {
+    state.selIdx = i;
+    renderMarkers();
+    renderCard();
+    animateCard();
+    popSelected();
+  }
+
+  function introMarkers() {
+    if (reduced()) return;
+    var els = markersEl.querySelectorAll(".marker");
+    els.forEach(function (el, i) {
+      el.animate([
+        { transform: "translate(-50%,-50%) scale(0.1)", opacity: 0 },
+        { transform: "translate(-50%,-50%) scale(1.2)", opacity: 1, offset: 0.65 },
+        { transform: "translate(-50%,-50%) scale(1)" }
+      ], { duration: 700, delay: 680 + i * 55, easing: BOUNCE, fill: "backwards" });
+    });
+  }
+  function pulseMarkers() {
+    if (reduced()) return;
+    var els = markersEl.querySelectorAll(".marker");
+    els.forEach(function (el, i) {
+      el.animate([
+        { transform: "translate(-50%,-50%) scale(1)" },
+        { transform: "translate(-50%,-50%) scale(1.28)", offset: 0.5 },
+        { transform: "translate(-50%,-50%) scale(1)" }
+      ], { duration: 520, delay: i * 28, easing: BOUNCE });
+    });
+  }
+  function popSelected() {
+    if (reduced()) return;
+    var el = markersEl.querySelectorAll(".marker")[state.selIdx];
+    if (!el) return;
+    el.animate([
+      { transform: "translate(-50%,-50%) scale(1)" },
+      { transform: "translate(-50%,-50%) scale(1.4)", offset: 0.45 },
+      { transform: "translate(-50%,-50%) scale(1)" }
+    ], { duration: 480, easing: BOUNCE });
+  }
+  function flashField() {
+    if (reduced()) return;
+    overlayEl.animate([
+      { opacity: 0, transform: "scale(0.6)" },
+      { opacity: 0.9, transform: "scale(1)", offset: 0.35 },
+      { opacity: 0, transform: "scale(1.15)" }
+    ], { duration: 650, easing: "ease-out" });
+  }
+  function fadeNote() {
+    if (reduced()) return;
+    noteEl.animate([
+      { opacity: 0, transform: "translateY(6px)" },
+      { opacity: 1, transform: "none" }
+    ], { duration: 420, easing: EASE });
+  }
+  function animateCard() {
+    if (reduced()) return;
+    var head = cardEl.querySelector(".cardhead");
+    var rows = cardEl.querySelectorAll(".era-row");
+    if (head) head.animate([
+      { opacity: 0, transform: "translateY(-10px)" },
+      { opacity: 1, transform: "none" }
+    ], { duration: 380, easing: EASE, fill: "backwards" });
+    rows.forEach(function (r, i) {
+      r.animate([
+        { opacity: 0, transform: "translateX(24px)" },
+        { opacity: 1, transform: "none" }
+      ], { duration: 460, delay: 120 + i * 110, easing: EASE, fill: "backwards" });
+    });
+  }
+
+  renderTabs();
+  renderNote();
+  renderMarkers();
+  renderCard();
+  introMarkers();
+})();
+</script>
+</body>
+</html>
