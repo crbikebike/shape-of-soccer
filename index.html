@@ -175,15 +175,15 @@
   .film-item {
     flex: 0 0 auto;
     scroll-snap-align: start;
-    width: 92px;
+    width: 118px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     background: var(--paper-2);
     border: 1px solid var(--paper-border);
     border-radius: 10px;
-    padding: 10px 8px 11px;
+    padding: 10px 10px 12px;
     cursor: pointer;
     transition: transform .18s var(--ease), background .18s ease, border-color .18s ease, box-shadow .18s ease;
   }
@@ -200,7 +200,7 @@
   .film-item[aria-pressed="true"] .film-cap em { color: var(--floodlight); }
   .film-thumb {
     position: relative;
-    width: 62px;
+    width: 58px;
     aspect-ratio: 68 / 100;
     background: var(--turf);
     border-radius: 4px;
@@ -218,34 +218,24 @@
     background: #fff;
   }
   .film-cap {
-    font-family: var(--cond);
-    font-size: 11.5px;
-    letter-spacing: .02em;
-    text-align: center;
-    line-height: 1.25;
-    color: var(--ink-on-paper);
-  }
-  .film-cap em { display: block; font-style: normal; font-size: 10px; color: var(--ash); }
-
-  .formation-head { margin: 4px 0 16px; }
-  .formation-name {
-    font-family: var(--display);
-    font-weight: 600;
-    font-size: clamp(48px, 9vw, 92px);
-    line-height: .92;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 17px;
     letter-spacing: -.01em;
-    margin: 0 0 6px;
+    text-align: center;
+    line-height: 1.15;
     color: var(--ink-on-paper);
-    text-wrap: balance;
   }
-  .formation-meta {
+  .film-cap em {
+    display: block;
+    font-style: normal;
     font-family: var(--cond);
     font-weight: 600;
-    font-size: 13px;
-    letter-spacing: .12em;
+    font-size: 11px;
+    letter-spacing: .04em;
     text-transform: uppercase;
-    color: var(--turf);
-    margin: 0;
+    margin-top: 3px;
+    color: var(--ash);
   }
 
   .formation-note {
@@ -585,10 +575,6 @@
   </section>
 
   <nav class="filmstrip" id="tabs" aria-label="Choose a formation"></nav>
-  <div class="formation-head">
-    <h2 class="formation-name" id="formation-name"></h2>
-    <p class="formation-meta" id="formation-meta"></p>
-  </div>
   <p class="formation-note" id="formation-note"></p>
   <div class="team-chips" id="team-chips"></div>
   <div class="goal-panel" id="goal-panel" hidden>
@@ -955,8 +941,6 @@
   ];
 
   var tabsEl = document.getElementById("tabs");
-  var nameEl = document.getElementById("formation-name");
-  var metaEl = document.getElementById("formation-meta");
   var noteEl = document.getElementById("formation-note");
   var markersEl = document.getElementById("markers");
   var overlayEl = document.getElementById("overlay");
@@ -1025,13 +1009,6 @@
 
   function renderNote() {
     noteEl.textContent = currentFormation().note;
-  }
-
-  function renderFormationHead() {
-    var f = currentFormation();
-    var count = (f.teams || []).length;
-    nameEl.textContent = f.label;
-    metaEl.textContent = count + " of 32 teams · Rank #" + f.rank;
   }
 
   function renderTeams() {
@@ -1161,7 +1138,6 @@
     state.key = key;
     state.selIdx = null;
     renderTabs();
-    renderFormationHead();
     renderNote();
     renderMarkers();
     renderCard();
@@ -1246,7 +1222,6 @@
   playBtn.addEventListener("click", playGoal);
 
   renderTabs();
-  renderFormationHead();
   renderNote();
   renderMarkers();
   renderCard();
