@@ -683,7 +683,9 @@
   <h2 class="picker-head">Pick a Formation</h2>
   <nav class="filmstrip" id="tabs" aria-label="Choose a formation"></nav>
   <p class="formation-note" id="formation-note"></p>
+  <h2 class="picker-head">Countries Using This Formation</h2>
   <div class="team-chips" id="team-chips"></div>
+  <h2 class="picker-head" id="tactics-head" hidden>Tactics</h2>
   <div class="goal-panel" id="goal-panel" hidden>
     <div class="goal-text" id="goal-text"></div>
   </div>
@@ -1053,6 +1055,7 @@
   var cardEl = document.getElementById("label-card");
   var chipsEl = document.getElementById("team-chips");
   var goalPanelEl = document.getElementById("goal-panel");
+  var tacticsHeadEl = document.getElementById("tactics-head");
   var goalTextEl = document.getElementById("goal-text");
   var playBtn = document.getElementById("play-goal");
   var ballEl = document.getElementById("ball");
@@ -1144,10 +1147,12 @@
     resetBall();
     if (!f.goal) {
       goalPanelEl.hidden = true;
+      tacticsHeadEl.hidden = true;
       playBtn.hidden = true;
       return;
     }
     goalPanelEl.hidden = false;
+    tacticsHeadEl.hidden = false;
     playBtn.hidden = false;
     goalTextEl.innerHTML =
       '<div class="goal-col attack"><p class="goal-kicker">Attack</p><p>' + f.goal.attackText + "</p></div>" +
