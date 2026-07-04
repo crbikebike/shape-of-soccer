@@ -541,11 +541,15 @@
 
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; }
-    .marker, .ball { transition: none; }
+    .marker, .ball, .label-card { transition: none; }
   }
 
   @media (max-width: 780px) {
-    body.sheet-open { overflow: hidden; }
+    body.sheet-open {
+      position: fixed;
+      left: 0;
+      right: 0;
+    }
   }
 
   .team-chips {
@@ -1277,13 +1281,13 @@
     popSelected();
     cardEl.classList.add("open");
     backdropEl.classList.add("open");
-    document.body.classList.add("sheet-open");
+    lockScroll();
   }
 
   function closeSheet() {
     cardEl.classList.remove("open");
     backdropEl.classList.remove("open");
-    document.body.classList.remove("sheet-open");
+    unlockScroll();
   }
 
   function deselectPosition() {
@@ -1292,6 +1296,81 @@
     renderCard();
     closeSheet();
   }
+
+  var lockedScrollY = 0;
+  var scrollLocked = false;
+
+  function lockScroll() {
+    if (scrollLocked) return;
+    scrollLocked = true;
+    lockedScrollY = window.scrollY;
+    document.body.style.top = -lockedScrollY + "px";
+    document.body.classList.add("sheet-open");
+  }
+
+  function unlockScroll() {
+    if (!scrollLocked) return;
+    scrollLocked = false;
+    document.body.classList.remove("sheet-open");
+    document.body.style.top = "";
+    window.scrollTo(0, lockedScrollY);
+  }
+
+  function isMobileSheet() {
+    return window.matchMedia && window.matchMedia("(max-width: 780px)").matches;
+  }
+
+  var sheetDrag = null;
+
+  function onSheetTouchStart(e) {
+    if (e.touches.length > 1) { sheetDrag = null; return; }
+    if (!cardEl.classList.contains("open") || !isMobileSheet()) { sheetDrag = null; return; }
+    if (e.target.closest(".sheet-close, a, button, input, select, textarea")) { sheetDrag = null; return; }
+    sheetDrag = { referenceY: e.touches[0].clientY, engaged: false };
+  }
+
+  function onSheetTouchMove(e) {
+    if (!sheetDrag || e.touches.length > 1) return;
+    var y = e.touches[0].clientY;
+    var deltaY = y - sheetDrag.referenceY;
+
+    if (!sheetDrag.engaged) {
+      if (deltaY > 0 && cardEl.scrollTop <= 0) {
+        sheetDrag.engaged = true;
+        sheetDrag.referenceY = y;
+        deltaY = 0;
+        cardEl.style.transition = "none";
+      } else {
+        return;
+      }
+    }
+
+    deltaY = Math.max(0, deltaY);
+    e.preventDefault();
+    sheetDrag.lastDelta = deltaY;
+    cardEl.style.transform = "translateY(" + deltaY + "px)";
+  }
+
+  function endSheetDrag(cancelled) {
+    if (!sheetDrag) return;
+    var wasEngaged = sheetDrag.engaged;
+    var lastDelta = sheetDrag.lastDelta || 0;
+    sheetDrag = null;
+    if (!wasEngaged) return;
+
+    cardEl.style.transition = "";
+    cardEl.offsetHeight; // force reflow so the stylesheet transition animates from the dragged position
+    cardEl.style.transform = "";
+
+    var sheetHeight = cardEl.getBoundingClientRect().height || 1;
+    var dismiss = !cancelled && (lastDelta / sheetHeight) > 0.28;
+    if (dismiss) {
+      deselectPosition();
+    }
+  }
+
+  function onSheetTouchEnd() { endSheetDrag(false); }
+  function onSheetTouchCancel() { endSheetDrag(true); }
 
   function introMarkers() {
     if (reduced()) return;
@@ -1361,6 +1440,10 @@
   cardEl.addEventListener("click", function (e) {
     if (e.target.closest(".sheet-close")) deselectPosition();
   });
+  cardEl.addEventListener("touchstart", onSheetTouchStart, { passive: true });
+  cardEl.addEventListener("touchmove", onSheetTouchMove, { passive: false });
+  cardEl.addEventListener("touchend", onSheetTouchEnd);
+  cardEl.addEventListener("touchcancel", onSheetTouchCancel);
 
   renderTabs();
   renderNote();
