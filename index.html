@@ -13,7 +13,8 @@
     --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
 
-    --ink: #0E1A14;
+    --ink: #0A1420;
+    --ink-2: #0E2A1C;
     --ink-text: #F3EFE1;
     --ink-text-muted: rgba(243,239,225,0.72);
     --ink-border: rgba(243,239,225,0.16);
@@ -26,7 +27,7 @@
 
     --turf: #1F6B45;
     --turf-deep: #163F2C;
-    --floodlight: #FFD873;
+    --floodlight: #FFB454;
 
     --ease: cubic-bezier(.2,0,0,1);
     --bounce: cubic-bezier(.34,1.56,.64,1);
@@ -66,7 +67,7 @@
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    background: var(--ink);
+    background: linear-gradient(165deg, var(--ink) 0%, var(--ink-2) 72%, var(--ink) 100%);
     color: var(--ink-text);
     padding: clamp(64px, 12vw, 120px) clamp(20px, 6vw, 64px) clamp(56px, 9vw, 88px);
   }
@@ -225,6 +226,27 @@
     color: var(--ink-on-paper);
   }
   .film-cap em { display: block; font-style: normal; font-size: 10px; color: var(--ash); }
+
+  .formation-head { margin: 4px 0 16px; }
+  .formation-name {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(48px, 9vw, 92px);
+    line-height: .92;
+    letter-spacing: -.01em;
+    margin: 0 0 6px;
+    color: var(--ink-on-paper);
+    text-wrap: balance;
+  }
+  .formation-meta {
+    font-family: var(--cond);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--turf);
+    margin: 0;
+  }
 
   .formation-note {
     font-family: var(--display);
@@ -548,7 +570,7 @@
   <div class="glow glow-b" aria-hidden="true"></div>
   <div class="glow glow-c" aria-hidden="true"></div>
   <div class="masthead-inner">
-    <div class="kicker">Gallery Four · Tactical Systems</div>
+    <div class="kicker">World Cup 2026 · Round of 32</div>
     <h1>The Shape of the Game</h1>
     <p class="deck">An exhibit on football formations, the roles within them, and the players who defined each position.</p>
     <div class="scroll-cue" aria-hidden="true"><i></i>Scroll to explore</div>
@@ -563,6 +585,10 @@
   </section>
 
   <nav class="filmstrip" id="tabs" aria-label="Choose a formation"></nav>
+  <div class="formation-head">
+    <h2 class="formation-name" id="formation-name"></h2>
+    <p class="formation-meta" id="formation-meta"></p>
+  </div>
   <p class="formation-note" id="formation-note"></p>
   <div class="team-chips" id="team-chips"></div>
   <div class="goal-panel" id="goal-panel" hidden>
@@ -601,7 +627,6 @@
   </div>
 
   <footer class="colophon">
-    <p class="line">Typeset in Fraunces, Source Serif 4, Barlow Condensed &amp; JetBrains Mono</p>
     <p class="line">Formation and roster data — 2026 FIFA World Cup, Round of 32</p>
     <p class="line">Vol. 2026 · No. 32 — The Shape of the Game</p>
   </footer>
@@ -930,6 +955,8 @@
   ];
 
   var tabsEl = document.getElementById("tabs");
+  var nameEl = document.getElementById("formation-name");
+  var metaEl = document.getElementById("formation-meta");
   var noteEl = document.getElementById("formation-note");
   var markersEl = document.getElementById("markers");
   var overlayEl = document.getElementById("overlay");
@@ -998,6 +1025,13 @@
 
   function renderNote() {
     noteEl.textContent = currentFormation().note;
+  }
+
+  function renderFormationHead() {
+    var f = currentFormation();
+    var count = (f.teams || []).length;
+    nameEl.textContent = f.label;
+    metaEl.textContent = count + " of 32 teams · Rank #" + f.rank;
   }
 
   function renderTeams() {
@@ -1127,6 +1161,7 @@
     state.key = key;
     state.selIdx = null;
     renderTabs();
+    renderFormationHead();
     renderNote();
     renderMarkers();
     renderCard();
@@ -1211,6 +1246,7 @@
   playBtn.addEventListener("click", playGoal);
 
   renderTabs();
+  renderFormationHead();
   renderNote();
   renderMarkers();
   renderCard();
