@@ -582,7 +582,6 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
-    margin-bottom: 16px;
   }
   @media (max-width: 560px) {
     .goal-panel .goal-text { grid-template-columns: 1fr; gap: 14px; }
@@ -610,12 +609,15 @@
     margin: 0;
   }
   .play-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
     font-family: var(--cond);
     font-size: 15px;
     font-weight: 700;
     letter-spacing: .05em;
     text-transform: uppercase;
-    padding: 10px 20px;
+    padding: 12px 20px;
     border-radius: 8px;
     border: 1px solid var(--turf);
     background: var(--turf);
@@ -684,7 +686,6 @@
   <div class="team-chips" id="team-chips"></div>
   <div class="goal-panel" id="goal-panel" hidden>
     <div class="goal-text" id="goal-text"></div>
-    <button type="button" class="play-btn" id="play-goal">▶ See a goal</button>
   </div>
 
   <div class="board">
@@ -710,6 +711,7 @@
         <div class="ball" id="ball" aria-hidden="true"></div>
         <div class="overlay" id="overlay"></div>
       </div>
+      <button type="button" class="play-btn" id="play-goal" hidden>▶ See a goal</button>
     </div>
 
     <div class="gutter" aria-hidden="true"></div>
@@ -1144,9 +1146,11 @@
     resetBall();
     if (!f.goal) {
       goalPanelEl.hidden = true;
+      playBtn.hidden = true;
       return;
     }
     goalPanelEl.hidden = false;
+    playBtn.hidden = false;
     goalTextEl.innerHTML =
       '<div class="goal-col attack"><p class="goal-kicker">Attack</p><p>' + f.goal.attackText + "</p></div>" +
       '<div class="goal-col defend"><p class="goal-kicker">Defend</p><p>' + f.goal.defendText + "</p></div>";
