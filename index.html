@@ -544,6 +544,10 @@
     .marker, .ball { transition: none; }
   }
 
+  @media (max-width: 780px) {
+    body.sheet-open { overflow: hidden; }
+  }
+
   .team-chips {
     display: flex;
     flex-wrap: wrap;
@@ -1273,11 +1277,13 @@
     popSelected();
     cardEl.classList.add("open");
     backdropEl.classList.add("open");
+    document.body.classList.add("sheet-open");
   }
 
   function closeSheet() {
     cardEl.classList.remove("open");
     backdropEl.classList.remove("open");
+    document.body.classList.remove("sheet-open");
   }
 
   function deselectPosition() {
