@@ -13,8 +13,8 @@
     --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
 
-    --ink: #0A1420;
-    --ink-2: #0E2A1C;
+    --ink: #0B0E15;
+    --ink-2: #171A22;
     --ink-text: #F3EFE1;
     --ink-text-muted: rgba(243,239,225,0.72);
     --ink-border: rgba(243,239,225,0.16);
@@ -82,9 +82,9 @@
     z-index: 0;
     animation: glowBreathe 9s ease-in-out infinite;
   }
-  .glow-a { background: radial-gradient(circle, var(--floodlight), transparent 70%); top: -18%; left: -12%; opacity: .55; }
-  .glow-b { background: radial-gradient(circle, var(--turf), transparent 70%); bottom: -28%; right: -10%; opacity: .6; animation-delay: -3s; }
-  .glow-c { background: radial-gradient(circle, var(--floodlight), transparent 70%); top: 15%; right: 18%; opacity: .25; animation-delay: -6s; }
+  .glow-a { background: radial-gradient(circle, var(--floodlight), transparent 70%); top: -18%; left: -12%; opacity: .5; }
+  .glow-b { background: radial-gradient(circle, var(--turf), transparent 70%); bottom: -30%; left: 10%; opacity: .55; animation-delay: -3s; }
+  .glow-c { background: radial-gradient(circle, var(--floodlight), transparent 65%); top: 8%; right: -4%; opacity: .4; animation-delay: -6s; }
   .masthead-inner {
     position: relative;
     z-index: 1;
@@ -98,7 +98,7 @@
   .masthead-text { max-width: 780px; }
   .masthead-figure {
     justify-self: end;
-    width: clamp(140px, 20vw, 260px);
+    width: clamp(160px, 24vw, 310px);
     animation: riseIn 1s var(--ease) both;
     animation-delay: .22s;
   }
@@ -106,7 +106,7 @@
     display: block;
     width: 100%;
     height: auto;
-    filter: drop-shadow(0 24px 40px rgba(0,0,0,.4));
+    filter: drop-shadow(0 28px 48px rgba(0,0,0,.55));
   }
   @media (max-width: 760px) {
     .masthead-inner { grid-template-columns: 1fr; }
