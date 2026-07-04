@@ -168,7 +168,6 @@
     margin: clamp(20px, 3vw, 30px) 0;
     padding: clamp(16px, 2.5vw, 24px) clamp(18px, 3vw, 26px);
     background: var(--paper-2);
-    border-left: 3px solid var(--turf);
     border-radius: 10px;
     box-shadow: 0 1px 2px rgba(30,60,40,0.08);
     animation: riseIn .7s ease both;
@@ -186,6 +185,16 @@
   .intro p { margin: 0 0 8px; font-size: 15px; color: var(--ash); max-width: none; }
   .intro p:last-child { margin-bottom: 0; }
   .intro strong { color: var(--ink-on-paper); }
+
+  .picker-head {
+    font-family: var(--cond);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--turf);
+    margin: clamp(20px, 3vw, 30px) 0 0;
+  }
 
   /* ---- Filmstrip nav ---- */
   .filmstrip {
@@ -603,9 +612,9 @@
   <section class="intro">
     <h2>How to read a formation</h2>
     <p>A formation is shorthand for how players occupy the pitch, written back to front: <strong>defenders–midfielders–forwards</strong>. The goalkeeper is never counted. <strong>4-3-3</strong> means four defenders, three midfielders, three forwards.</p>
-    <p>No two formations play the same way even with matching numbers. Choose one below, then touch any position to learn more about the role in that formation.</p>
   </section>
 
+  <h2 class="picker-head">Pick a Formation</h2>
   <nav class="filmstrip" id="tabs" aria-label="Choose a formation"></nav>
   <p class="formation-note" id="formation-note"></p>
   <div class="team-chips" id="team-chips"></div>
