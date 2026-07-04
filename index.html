@@ -395,6 +395,70 @@
     animation: riseIn .7s ease both;
     animation-delay: .68s;
   }
+  @media (max-width: 780px) {
+    .label-card {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      min-height: 0;
+      max-height: 72vh;
+      overflow-y: auto;
+      border-radius: 18px 18px 0 0;
+      border-bottom: none;
+      box-shadow: 0 -16px 40px -12px rgba(10,20,15,0.4);
+      padding: 26px clamp(20px, 5vw, 30px) calc(24px + env(safe-area-inset-bottom, 0px));
+      transform: translateY(105%);
+      transition: transform .34s var(--ease);
+      animation: none;
+      z-index: 60;
+    }
+    .label-card.open { transform: translateY(0); }
+    .label-card::before {
+      content: "";
+      position: sticky;
+      top: 0;
+      display: block;
+      width: 36px;
+      height: 4px;
+      margin: -12px auto 14px;
+      border-radius: 4px;
+      background: var(--paper-border);
+    }
+  }
+  .sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 20, 15, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease;
+    z-index: 55;
+  }
+  @media (max-width: 780px) {
+    .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+  }
+  .sheet-close {
+    display: none;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--paper-border);
+    background: var(--paper);
+    color: var(--ink-on-paper);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .sheet-close:focus-visible { outline: 2px solid var(--floodlight); outline-offset: 2px; }
+  @media (max-width: 780px) {
+    .sheet-close { display: flex; }
+  }
   .label-card .eyebrow {
     font-family: var(--cond);
     font-weight: 600;
@@ -652,6 +716,7 @@
 
     <div class="label-card" id="label-card"></div>
   </div>
+  <div class="sheet-backdrop" id="sheet-backdrop"></div>
 
   <footer class="colophon">
     <p class="line">Formation and roster data — 2026 FIFA World Cup, Round of 32</p>
@@ -991,6 +1056,7 @@
   var goalTextEl = document.getElementById("goal-text");
   var playBtn = document.getElementById("play-goal");
   var ballEl = document.getElementById("ball");
+  var backdropEl = document.getElementById("sheet-backdrop");
 
   var state = { key: "433", selIdx: null, goalPlaying: false };
 
@@ -1159,7 +1225,8 @@
     var pos = currentFormation().positions[state.selIdx];
     var info = POSITION_INFO[pos.type];
     var title = ABBR_NAMES[pos.abbr] || ABBR_NAMES[pos.type];
-    var html = '<div class="cardhead"><p class="eyebrow">Position</p>';
+    var html = '<button type="button" class="sheet-close" aria-label="Close">✕</button>';
+    html += '<div class="cardhead"><p class="eyebrow">Position</p>';
     html += "<h3>" + title + "</h3>";
     html += '<p class="role">' + info.role + "</p></div>";
     info.eras.forEach(function (e) {
@@ -1184,6 +1251,7 @@
     renderCard();
     renderTeams();
     renderGoalPanel();
+    closeSheet();
     fadeNote();
     flashField();
     pulseMarkers();
@@ -1195,6 +1263,20 @@
     renderCard();
     animateCard();
     popSelected();
+    cardEl.classList.add("open");
+    backdropEl.classList.add("open");
+  }
+
+  function closeSheet() {
+    cardEl.classList.remove("open");
+    backdropEl.classList.remove("open");
+  }
+
+  function deselectPosition() {
+    state.selIdx = null;
+    renderMarkers();
+    renderCard();
+    closeSheet();
   }
 
   function introMarkers() {
@@ -1261,6 +1343,10 @@
   }
 
   playBtn.addEventListener("click", playGoal);
+  backdropEl.addEventListener("click", deselectPosition);
+  cardEl.addEventListener("click", function (e) {
+    if (e.target.closest(".sheet-close")) deselectPosition();
+  });
 
   renderTabs();
   renderNote();
